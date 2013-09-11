@@ -66,7 +66,7 @@ abstract class DocumentFilterManager
             } else {
                 if ($value !== null) {
                     if (!is_array($value)) {
-                        $qb->field($propertyName)->equals(new \MongoRegex(sprintf('/%s/', $value)));
+                        $qb->field($propertyName)->equals(new \MongoRegex(sprintf('/%s/i', $value)));
                     } elseif (!empty($value)) {
                         $qb->field($propertyName)->in($value);
                     }
