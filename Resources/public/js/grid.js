@@ -1,5 +1,12 @@
 $(document).ready(function () {
 
+    $('tr[data-link]').each(function(i, el) {
+
+        $(el).click(function(e)  {
+            window.location = $(el).attr('data-link');
+        });
+    });
+
     $('#btn-filter').click(function () {
 
         var $form = $('#filter-form');
@@ -69,31 +76,15 @@ $(document).ready(function () {
         });
     });
 
-    var filterDate = $(".filter-date").datepicker({
-                                                      language: 'fr',
-                                                      format: 'dd/mm/yyyy',
-                                                      autoclose: true
-                                                  }).data('datepicker');
-
-    var datepicker = $(".datepicker").datepicker({
-                                                     language: 'fr',
-                                                     format: 'dd/mm/yyyy',
-                                                     autoclose: true
-                                                 }).data('datepicker');
-
-    $(".add-on.date-btn").click(function(e){
-        e.preventDefault();
-        $(this).prev().focus();
-    });
-
+    /*
     $("select.filter").selectpicker({
-                                        'countSelectedText': '{0} sur {1} sélectionnés'
-                                    });
+        'countSelectedText': '{0} sur {1} sélectionnés'
+    });
 
     $('input[name="batch-check-all"]').click(function(e) {
         $('.batch-selected').prop('checked', this.checked);
         $('input[name="batch-check-all"]').prop('checked', this.checked);
     });
-
+    */
 
 });
