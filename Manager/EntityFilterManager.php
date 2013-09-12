@@ -23,6 +23,11 @@ abstract class EntityFilterManager
      */
     public abstract function getEntityRepository();
 
+    /**
+     * @param FilterModel $filter
+     *
+     * @return mixed
+     */
     public function findByFilter(FilterModel $filter)
     {
         $query = $this->createQueryByFilter($filter);
@@ -30,6 +35,11 @@ abstract class EntityFilterManager
         return $query->getQuery()->execute();
     }
 
+    /**
+     * @param FilterModel $filter
+     *
+     * @return QueryBuilder
+     */
     public function createQueryByFilter(FilterModel $filter)
     {
         $qb = $this->getEntityRepository()->createQueryBuilder('entity');
