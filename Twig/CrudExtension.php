@@ -21,16 +21,12 @@ use Wizad\CrudBundle\Model\PaginatedFilterModel;
 class CrudExtension extends \Twig_Extension
 {
     /**
-     * @var Router
+     * @var Container
      */
-    private $router;
-
-    private $request;
+    private $container;
 
     public function __construct(Container $container)
     {
-        $this->router  = $container->get('router');
-        $this->request = $container->get('request');
     }
 
     /**
@@ -154,7 +150,7 @@ class CrudExtension extends \Twig_Extension
 
     private function generateUrl($args, $page, $pageAttributeName)
     {
-        return $this->router->generate($this->request->get('_route'), array_merge($args, array($pageAttributeName => $page)));
+        return $this->container->get('router')->generate($this->container->get('request')->get('_route'), array_merge($args, array($pageAttributeName => $page)));
     }
 
 }
