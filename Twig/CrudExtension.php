@@ -27,6 +27,7 @@ class CrudExtension extends \Twig_Extension
 
     public function __construct(Container $container)
     {
+        $this->container = $container;
     }
 
     /**
