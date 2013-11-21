@@ -79,7 +79,7 @@ class CrudExtension extends \Twig_Extension
 
         $filtersValue = $this->extractFilter($filter, $formFilter);
 
-        $paginator = '<div class="paginator"><ul>';
+        $paginator = '<ul class="pagination">';
 
         // Create left arrow
         $paginator .= '<li ' . ($filter->getPage() == 1 ? 'class="disabled"' : '') . '><a href="' . $this->generateUrl($filtersValue, 1, $formFilter['page']->vars['full_name']) . '">««</a></li>';
@@ -111,7 +111,7 @@ class CrudExtension extends \Twig_Extension
         $paginator .= '<li' . ($filter->getPage() == $filter->getPageNumber() ? ' class="disabled"' : '') . '><a href="' . $this->generateUrl($filtersValue, ($filter->getPage() < $filter->getPageNumber() ? $filter->getPage() + 1 : $filter->getPageNumber()), $formFilter['page']->vars['full_name']) . '">»</a></li>';
         $paginator .= '<li' . ($filter->getPage() == $filter->getPageNumber() ? ' class="disabled"' : '') . '><a href="' . $this->generateUrl($filtersValue, $filter->getPageNumber(), $formFilter['page']->vars['full_name']) . '">»»</a></li>';
 
-        $paginator .= '</ul></div>';
+        $paginator .= '</ul>';
 
         return $paginator;
     }
