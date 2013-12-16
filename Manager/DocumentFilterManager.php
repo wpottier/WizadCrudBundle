@@ -73,6 +73,10 @@ abstract class DocumentFilterManager
                 }
             }
         }
+        
+        if(strlen($filter->getSort()) > 0) {
+            $qb->sort($filter->getSort(), $filter->getSortMode());
+        }
 
         return $qb;
     }
