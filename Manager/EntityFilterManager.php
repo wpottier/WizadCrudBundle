@@ -83,6 +83,10 @@ abstract class EntityFilterManager
             }
         }
 
+        if (strlen($filter->getSort()) > 0) {
+            $qb->orderBy(sprintf('entity.%s', $filter->getSort()), $filter->getSortMode());
+        }
+
         return $qb;
     }
 }
