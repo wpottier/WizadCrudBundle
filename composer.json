@@ -3,7 +3,7 @@
     "description": "Provide utility to easily create crud for symfony2 with filter, pagination and batch action support",
     "minimum-stability": "dev",
     "require": {
-        "symfony/symfony": "2.3.*"
+        "symfony/symfony": "~2.3"
     },
     "license": "MIT",
     "authors": [
