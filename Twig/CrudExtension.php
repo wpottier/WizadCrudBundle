@@ -52,7 +52,7 @@ class CrudExtension extends \Twig_Extension
     public function sortIndicator(PaginatedFilterModel $filter, FormView $formFilter, $sort)
     {
         $filtersValue = $this->extractFilter($filter, $formFilter);
-        if ($filtersValue[$formFilter['sort']->vars['full_name']] == $sort) {
+        if (isset($filtersValue[$formFilter['sort']->vars['full_name']]) && $filtersValue[$formFilter['sort']->vars['full_name']] == $sort) {
             return '<i class="icon-caret-' . ($filtersValue[$formFilter['sortMode']->vars['full_name']] == 'asc' ? 'up' : 'down') . '"></i>';
         }
     }
@@ -61,7 +61,7 @@ class CrudExtension extends \Twig_Extension
     {
         $filtersValue = $this->extractFilter($filter, $formFilter);
 
-        if ($filtersValue[$formFilter['sort']->vars['full_name']] == $sort) {
+        if (isset($filtersValue[$formFilter['sort']->vars['full_name']]) && $filtersValue[$formFilter['sort']->vars['full_name']] == $sort) {
             $filtersValue[$formFilter['sortMode']->vars['full_name']] = $filtersValue[$formFilter['sortMode']->vars['full_name']] == 'asc' ? 'desc' : 'asc';
         } else {
             $filtersValue[$formFilter['sort']->vars['full_name']]     = $sort;
