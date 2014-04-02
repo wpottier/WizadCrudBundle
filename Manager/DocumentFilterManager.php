@@ -11,17 +11,33 @@
 
 namespace Wizad\CrudBundle\Manager;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Wizad\CrudBundle\Model\FilterModel;
 
 
-abstract class DocumentFilterManager
+abstract class DocumentFilterManager implements FilterManagerInterface
 {
     /**
      * @return DocumentRepository
      */
     public abstract function getDocumentRepository();
+
+    public function findByPrimaryKey($primaryKey)
+    {
+        return $this->getDocumentRepository()->find($primaryKey);
+    }
+
+    public function count(FilterModel $filter)
+    {
+        $qb = $this->createQueryByFilter($filter);
+        $qb->count();
+
+        /** @var Cursor $cursor */
+        $cursor = $qb->getQuery()->execute();
+        return $cursor;
+    }
 
     /**
      * @param FilterModel $filter
@@ -54,11 +70,11 @@ abstract class DocumentFilterManager
      *
      * @return Builder
      */
-    public function applyFilter(Builder $qb, FilterModel $filter)
+    protected function applyFilter(Builder $qb, FilterModel $filter)
     {
         foreach ($filter->getFilters() as $propertyName => $property) {
 
-            $value       = $filter->getFilterValue($propertyName);
+            $value       = $filter->getFilterValue($property['property']);
             $queryMethod = sprintf('filter%s', ucfirst($propertyName));
 
             if (method_exists($this, $queryMethod)) {
@@ -73,8 +89,8 @@ abstract class DocumentFilterManager
                 }
             }
         }
-        
-        if(strlen($filter->getSort()) > 0) {
+
+        if (strlen($filter->getSort()) > 0) {
             $qb->sort($filter->getSort(), $filter->getSortMode());
         }
 

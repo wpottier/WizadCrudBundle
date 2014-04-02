@@ -16,12 +16,25 @@ use Doctrine\ORM\EntityRepository;
 use Wizad\CrudBundle\Model\FilterModel;
 
 
-abstract class EntityFilterManager
+abstract class EntityFilterManager implements FilterManagerInterface
 {
     /**
      * @return EntityRepository
      */
     public abstract function getEntityRepository();
+
+    public function findByPrimaryKey($primaryKey)
+    {
+        return $this->getEntityRepository()->find($primaryKey);
+    }
+
+    public function count(FilterModel $filter)
+    {
+        $qb = $this->createQueryByFilter($filter);
+        $qb->select('COUNT(entity)')->setMaxResults(null)->setFirstResult(null);
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 
     /**
      * @param FilterModel $filter
@@ -55,11 +68,11 @@ abstract class EntityFilterManager
      *
      * @return QueryBuilder
      */
-    public function applyFilter(QueryBuilder $qb, FilterModel $filter)
+    protected function applyFilter(QueryBuilder $qb, FilterModel $filter)
     {
         foreach ($filter->getFilters() as $propertyName => $property) {
 
-            $value       = $filter->getFilterValue($propertyName);
+            $value       = $filter->getFilterValue($property['property']);
             $queryMethod = sprintf('filter%s', ucfirst($propertyName));
 
             if (method_exists($this, $queryMethod)) {

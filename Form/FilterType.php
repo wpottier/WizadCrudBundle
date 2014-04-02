@@ -13,19 +13,54 @@ namespace Wizad\CrudBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Wizad\CrudBundle\Model\FilterModel;
 
-abstract class FilterType extends AbstractType {
+abstract class FilterType extends AbstractType
+{
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
         $builder
             ->add('sort')
             ->add('sortMode', 'choice', array(
                 'choices' => array(FilterModel::SORT_ASC => 'Ascendant', FilterModel::SORT_DESC => 'Descendant')
-            ))
-        ;
+            ));
+
+        if(!isset($options['filterModel'])) {
+            return;
+        }
+
+        if (!($options['filterModel'] instanceof FilterModel)) {
+            throw new \RuntimeException('Invalid filterModel value.');
+        }
+
+        /** @var FilterModel $filterModel */
+        $filterModel = $options['filterModel'];
+
+        foreach ($filterModel->getFilters() as $property => $filter) {
+            if (!$filter['formType']) {
+                continue;
+            }
+
+            $builder->add($property, $filter['formType'], array_merge($filter['formOptions'] ? $filter['formOptions'] : array(), array('required' => false)));
+        }
     }
 
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver
+            ->setDefaults(array(
+                              'csrf_protection' => false,
+                              'method'          => 'get'
+                          ))
+            ->setOptional(array(
+                              'filterModel'
+                          ));
+    }
+
+    public function getName()
+    {
+        return '';
+    }
 }

@@ -20,6 +20,10 @@ use Doctrine\ORM\Mapping\Annotation;
  */
 class Filter
 {
+    public $formType;
+
+    public $formOptions;
+
     public function __construct()
     {
 

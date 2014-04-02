@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Router;
+use Wizad\CrudBundle\Crud\IndexView;
 use Wizad\CrudBundle\Model\PaginatedFilterModel;
 
 class CrudExtension extends \Twig_Extension
@@ -49,19 +50,21 @@ class CrudExtension extends \Twig_Extension
         );
     }
 
-    public function sortIndicator(PaginatedFilterModel $filter, FormView $formFilter, $sort)
+    public function sortIndicator(PaginatedFilterModel $filter, FormView $formFilter, $sort, $sortUpHtml = 'up', $sortDownHtml = 'down')
     {
         $filtersValue = $this->extractFilter($filter, $formFilter);
-        if ($filtersValue[$formFilter['sort']->vars['full_name']] == $sort) {
-            return '<i class="icon-caret-' . ($filtersValue[$formFilter['sortMode']->vars['full_name']] == 'asc' ? 'up' : 'down') . '"></i>';
+        if (isset($filtersValue[$formFilter['sort']->vars['full_name']]) && $filtersValue[$formFilter['sort']->vars['full_name']] == $sort) {
+            return $filtersValue[$formFilter['sortMode']->vars['full_name']] == 'asc' ? $sortUpHtml : $sortDownHtml;
         }
+
+        return null;
     }
 
     public function sortPath(PaginatedFilterModel $filter, FormView $formFilter, $sort)
     {
         $filtersValue = $this->extractFilter($filter, $formFilter);
 
-        if ($filtersValue[$formFilter['sort']->vars['full_name']] == $sort) {
+        if (isset($filtersValue[$formFilter['sort']->vars['full_name']]) && $filtersValue[$formFilter['sort']->vars['full_name']] == $sort) {
             $filtersValue[$formFilter['sortMode']->vars['full_name']] = $filtersValue[$formFilter['sortMode']->vars['full_name']] == 'asc' ? 'desc' : 'asc';
         } else {
             $filtersValue[$formFilter['sort']->vars['full_name']]     = $sort;
@@ -71,45 +74,52 @@ class CrudExtension extends \Twig_Extension
         return $this->generateUrl($filtersValue, $filtersValue[$formFilter['page']->vars['full_name']], $formFilter['page']->vars['full_name']);
     }
 
-    public function paginator(PaginatedFilterModel $filter, FormView $formFilter)
+    public function paginator(IndexView $crud)
     {
-        if ($filter->getPageNumber() <= 1) {
+        /** @var PaginatedFilterModel $filterModel */
+        $filterModel = $crud->getFilterModel();
+        $filterForm = $crud->getFilterForm();
+
+        $pageNumber = $crud->getPageNumber();
+        $page = $filterModel->getPage();
+
+        if ($pageNumber <= 1) {
             return '';
         }
 
-        $filtersValue = $this->extractFilter($filter, $formFilter);
+        $filtersValue = $this->extractFilter($filterModel, $filterForm);
 
         $paginator = '<ul class="pagination">';
 
         // Create left arrow
-        $paginator .= '<li ' . ($filter->getPage() == 1 ? 'class="disabled"' : '') . '><a href="' . $this->generateUrl($filtersValue, 1, $formFilter['page']->vars['full_name']) . '">««</a></li>';
-        $paginator .= '<li ' . ($filter->getPage() == 1 ? 'class="disabled"' : '') . '><a href="' . $this->generateUrl($filtersValue, ($filter->getPage() > 1 ? $filter->getPage() - 1 : 1), $formFilter['page']->vars['full_name']) . '">«</a></li>';
+        $paginator .= '<li ' . ($filterModel->getPage() == 1 ? 'class="disabled"' : '') . '><a href="' . $this->generateUrl($filtersValue, 1, $filterForm['page']->vars['full_name']) . '">««</a></li>';
+        $paginator .= '<li ' . ($filterModel->getPage() == 1 ? 'class="disabled"' : '') . '><a href="' . $this->generateUrl($filtersValue, ($filterModel->getPage() > 1 ? $filterModel->getPage() - 1 : 1), $filterForm['page']->vars['full_name']) . '">«</a></li>';
 
-        if ($filter->getPageNumber() < 7) {
-            for ($i = 1; $i <= $filter->getPageNumber(); $i++) {
-                $paginator .= '<li' . ($i == $filter->getPage() ? ' class="active"' : '') . '><a href="' . $this->generateUrl($filtersValue, $i, $formFilter['page']->vars['full_name']) . '">' . $i . '</a></li>';
+        if ($pageNumber < 7) {
+            for ($i = 1; $i <= $pageNumber; $i++) {
+                $paginator .= '<li' . ($i == $filterModel->getPage() ? ' class="active"' : '') . '><a href="' . $this->generateUrl($filtersValue, $i, $filterForm['page']->vars['full_name']) . '">' . $i . '</a></li>';
             }
         } else {
-            $start = $filter->getPage() < 4 ? 1 : $filter->getPage() - 3;
+            $start = $filterModel->getPage() < 4 ? 1 : $filterModel->getPage() - 3;
 
-            if ($start + 7 > $filter->getPageNumber()) {
-                $start -= (($start + 7) - $filter->getPageNumber()) - 1;
+            if ($start + 7 > $pageNumber) {
+                $start -= (($start + 7) - $pageNumber) - 1;
             }
 
             for ($i = 0; $i < 7; $i++) {
                 $position = $i + $start;
 
-                if ($position > $filter->getPageNumber()) {
+                if ($position > $pageNumber) {
                     break;
                 }
 
-                $paginator .= '<li ' . ($position == $filter->getPage() ? 'class="active"' : '') . '><a href="' . $this->generateUrl($filtersValue, $position, $formFilter['page']->vars['full_name']) . '">' . $position . '</a></li>';
+                $paginator .= '<li ' . ($position == $page ? 'class="active"' : '') . '><a href="' . $this->generateUrl($filtersValue, $position, $filterForm['page']->vars['full_name']) . '">' . $position . '</a></li>';
             }
         }
 
         // Create right arrow
-        $paginator .= '<li' . ($filter->getPage() == $filter->getPageNumber() ? ' class="disabled"' : '') . '><a href="' . $this->generateUrl($filtersValue, ($filter->getPage() < $filter->getPageNumber() ? $filter->getPage() + 1 : $filter->getPageNumber()), $formFilter['page']->vars['full_name']) . '">»</a></li>';
-        $paginator .= '<li' . ($filter->getPage() == $filter->getPageNumber() ? ' class="disabled"' : '') . '><a href="' . $this->generateUrl($filtersValue, $filter->getPageNumber(), $formFilter['page']->vars['full_name']) . '">»»</a></li>';
+        $paginator .= '<li' . ($page == $pageNumber ? ' class="disabled"' : '') . '><a href="' . $this->generateUrl($filtersValue, ($page < $pageNumber ? $page + 1 : $pageNumber), $filterForm['page']->vars['full_name']) . '">»</a></li>';
+        $paginator .= '<li' . ($page == $pageNumber ? ' class="disabled"' : '') . '><a href="' . $this->generateUrl($filtersValue, $pageNumber, $filterForm['page']->vars['full_name']) . '">»»</a></li>';
 
         $paginator .= '</ul>';
 

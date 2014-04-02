@@ -6,10 +6,18 @@
 
 
     <parameters>
+        <parameter key="wizad_crud.manager.class">Wizad\CrudBundle\Crud\Crud</parameter>
+
         <parameter key="wizad_crud.twig.crud_extension.class">Wizad\CrudBundle\Twig\CrudExtension</parameter>
     </parameters>
 
     <services>
+        <service id="wizad_crud.manager" class="%wizad_crud.manager.class%" abstract="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
+
         <service id="wizad_crud.twig.crud_extension" class="%wizad_crud.twig.crud_extension.class%">
             <argument type="service" id="service_container" />
             <tag name="twig.extension" />

@@ -16,15 +16,6 @@ use Wizad\CrudBundle\Model\PaginatedFilterModel;
 
 abstract class EntityPaginatedFilterManager extends EntityFilterManager
 {
-    public function count(PaginatedFilterModel $filter)
-    {
-        $qb = parent::createQueryByFilter($filter);
-
-        $qb->select('COUNT(entity)');
-
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
     public function createQueryByFilter(FilterModel $filter)
     {
         if (!$filter instanceof PaginatedFilterModel) {

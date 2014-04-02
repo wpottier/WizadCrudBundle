@@ -12,12 +12,13 @@
 namespace Wizad\CrudBundle\Model;
 
 use Doctrine\Common\Annotations\Reader;
+use Wizad\CrudBundle\Annotation\Filter;
 
 class FilterModel
 {
     const ANNOTATION_CLASS = 'Wizad\\CrudBundle\\Annotation\\Filter';
 
-    const SORT_ASC = 'asc';
+    const SORT_ASC  = 'asc';
     const SORT_DESC = 'desc';
 
     private $reader;
@@ -89,9 +90,18 @@ class FilterModel
      *
      * @return mixed
      */
-    public function getFilterValue($name)
+    public function getFilterValue($property)
     {
-        return $this->{$this->filters[$name]['getter']}();
+        if(is_string($property)) {
+            $property = $this->filters[$property]['property'];
+        }
+
+        /** @var \ReflectionProperty $property */
+
+        $property->setAccessible(true);
+        $value = $property->getValue($this);
+
+        return $value;
     }
 
     /**
@@ -120,8 +130,12 @@ class FilterModel
 
         foreach ($properties as $property) {
             if ($annotation = $this->reader->getPropertyAnnotation($property, self::ANNOTATION_CLASS)) {
+                /** @var Filter $annotation */
+
                 $this->filters[$property->getName()] = array(
-                    'getter' => sprintf('get%s', ucfirst($property->getName()))
+                    'property'    => $property,
+                    'formType'    => $annotation->formType,
+                    'formOptions' => $annotation->formOptions
                 );
             }
         }

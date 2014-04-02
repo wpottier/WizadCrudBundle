@@ -113,19 +113,6 @@ class PaginatedFilterModel extends FilterModel
     /**
      * @return int
      */
-    public function getPageNumber()
-    {
-        $count = (int)($this->total / $this->itemPerPage);
-        if ($this->total % $this->itemPerPage > 0) {
-            $count++;
-        }
-
-        return $count;
-    }
-
-    /**
-     * @return int
-     */
     public function urlizePage()
     {
         return $this->page;
