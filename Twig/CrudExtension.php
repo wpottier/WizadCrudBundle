@@ -75,10 +75,10 @@ class CrudExtension extends \Twig_Extension
         return $this->generateUrl($filtersValue, $filtersValue[$formFilter['page']->vars['full_name']], $formFilter['page']->vars['full_name']);
     }
 
-    public function oldPaginator(PaginatedFilterModel $filter, FormView $formFilter, $items)
+    public function oldPaginator(PaginatedFilterModel $filter, FormView $formFilter)
     {
         // Create fake crud for compatibility
-        $crud = new IndexView($filter, $formFilter, $filter->getTotal(), $items, function() {});
+        $crud = new IndexView($filter, $formFilter, $filter->getTotal(), null, function() {});
         return $this->paginator($crud);
     }
 
