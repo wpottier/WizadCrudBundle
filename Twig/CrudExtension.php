@@ -45,6 +45,7 @@ class CrudExtension extends \Twig_Extension
     {
         return array(
             new \Twig_SimpleFunction('paginator', array($this, 'paginator'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFunction('oldPaginator', array($this, 'oldPaginator'), array('is_safe' => array('html'))),
             new \Twig_SimpleFunction('sortPath', array($this, 'sortPath'), array('is_safe' => array('html'))),
             new \Twig_SimpleFunction('sortIndicator', array($this, 'sortIndicator'), array('is_safe' => array('html'))),
         );
@@ -72,6 +73,13 @@ class CrudExtension extends \Twig_Extension
         }
 
         return $this->generateUrl($filtersValue, $filtersValue[$formFilter['page']->vars['full_name']], $formFilter['page']->vars['full_name']);
+    }
+
+    public function oldPaginator(PaginatedFilterModel $filter, FormView $formFilter, $items)
+    {
+        // Create fake crud for compatibility
+        $crud = new IndexView($filter, $formFilter, $filter->getTotal(), $items, function() {});
+        return $this->paginator($crud);
     }
 
     public function paginator(IndexView $crud)
