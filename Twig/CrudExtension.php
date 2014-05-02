@@ -157,6 +157,10 @@ class CrudExtension extends \Twig_Extension
                 }
             }
 
+            if(is_object($value)) {
+                $value = $formFilter[$name]->vars['value'];
+            }
+
             if($value === null)
                 continue;
 
