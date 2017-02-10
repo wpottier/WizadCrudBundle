@@ -12,6 +12,8 @@
 namespace Wizad\CrudBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 abstract class PaginatedFilterType extends FilterType
@@ -21,9 +23,9 @@ abstract class PaginatedFilterType extends FilterType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('page', 'number', array('required' => false))
-            ->add('itemPerPage', 'choice', array(
-                'choices' => array('10' => '10 items', '20' => '20 items', '40' => '40 items', '100' => '100 items')
+            ->add('page', NumberType::class, array('required' => false))
+            ->add('itemPerPage', ChoiceType::class, array(
+                'choices' => array('10 items' => '10', '20 items' => '20', '40 items' => '40', '100 items' => '100')
             ))
         ;
     }

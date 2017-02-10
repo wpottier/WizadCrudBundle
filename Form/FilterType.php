@@ -12,8 +12,9 @@
 namespace Wizad\CrudBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Wizad\CrudBundle\Model\FilterModel;
 
 abstract class FilterType extends AbstractType
@@ -23,7 +24,7 @@ abstract class FilterType extends AbstractType
     {
         $builder
             ->add('sort')
-            ->add('sortMode', 'choice', array(
+            ->add('sortMode', ChoiceType::class, array(
                 'choices' => array(FilterModel::SORT_ASC => 'Ascendant', FilterModel::SORT_DESC => 'Descendant')
             ));
 
@@ -47,16 +48,14 @@ abstract class FilterType extends AbstractType
         }
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver
-            ->setDefaults(array(
-                              'csrf_protection' => false,
-                              'method'          => 'get'
-                          ))
-            ->setOptional(array(
-                              'filterModel'
-                          ));
+          ->setDefaults(array(
+            'csrf_protection' => false,
+            'method'          => 'get',
+            'filterModel'     => null
+          ));
     }
 
     public function getName()
