@@ -173,7 +173,8 @@ class CrudExtension extends \Twig_Extension
 
     private function generateUrl($args, $page, $pageAttributeName)
     {
-        return $this->container->get('router')->generate($this->container->get('request')->get('_route'), array_merge($args, array($pageAttributeName => $page)));
+        $request = $this->container->get('request_stack')->getMasterRequest();
+        return $this->container->get('router')->generate($request->get('_route'), array_merge($args, array($pageAttributeName => $page)));
     }
 
 }
