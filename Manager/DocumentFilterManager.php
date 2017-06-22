@@ -32,6 +32,9 @@ abstract class DocumentFilterManager implements FilterManagerInterface
     public function count(FilterModel $filter)
     {
         $qb = $this->createQueryByFilter($filter);
+        
+        //By default mongo set the limit to 10 so we have to remove it before count 
+        $qb->limit(0);
         $qb->count();
 
         /** @var Cursor $cursor */
